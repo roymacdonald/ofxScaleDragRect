@@ -1,9 +1,10 @@
 //
 //  interactiveRect.h
-//  JuegoDuckHunt
 //
 //  Created by Roy Macdonald on 8/15/12.
 //  Copyright (c) 2012 micasa. All rights reserved.
+//
+//  Updated by Aaron Richards on 13/05/2014.
 //
 
 #pragma once
@@ -14,11 +15,12 @@
 
 #define MARGEN 10
 
-class interactiveRect : public ofRectangle{
+class ofxInteractiveRect : public ofRectangle
+{
     
 public:
-    interactiveRect(string nombre);
-    ~interactiveRect();
+    ofxInteractiveRect(string nombre);
+    ~ofxInteractiveRect();
         
     void enableEdit(bool enable = true);
     void disableEdit();
@@ -43,7 +45,8 @@ public:
     string path;
     
     ofRectangle getRect();
-    void setRect(float x, float y, float width, float height){
+    void setRect(float x, float y, float width, float height)
+    {
         this->x = x; 
         this->y = y;
         this->width = width;

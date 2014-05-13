@@ -10,3 +10,6 @@
 *.lai
 *.la
 *.a
+
+/src/.DS_Store
+/.DS_Store
