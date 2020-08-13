@@ -36,7 +36,11 @@ public:
     void mousePressed(ofMouseEventArgs & mouse);
     void mouseDragged(ofMouseEventArgs & mouse);
     void mouseReleased(ofMouseEventArgs & mouse);
-    
+
+	void mouseScrolled(ofMouseEventArgs & mouse);
+	void mouseEntered(ofMouseEventArgs & mouse);
+	void mouseExited(ofMouseEventArgs & mouse);
+
     float getRectX(){return x;}
     float getRectY(){return y;}
     float getRectWidth(){return width;}

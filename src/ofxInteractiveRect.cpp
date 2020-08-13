@@ -341,3 +341,10 @@ void ofxInteractiveRect::mouseReleased(ofMouseEventArgs & mouse)
 	bPressed = false;
     
 }
+
+
+
+//--------------------------------------------------------------
+void ofxInteractiveRect::mouseScrolled(ofMouseEventArgs & mouse) {}
+void ofxInteractiveRect::mouseEntered(ofMouseEventArgs & mouse) {}
+void ofxInteractiveRect::mouseExited(ofMouseEventArgs & mouse) {}
