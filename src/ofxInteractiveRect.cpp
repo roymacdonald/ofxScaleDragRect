@@ -33,7 +33,7 @@ ofxInteractiveRect::~ofxInteractiveRect()
 void ofxInteractiveRect::enableEdit(bool enable)
 {
     
-    cout << "interactiveRect " << this->nombre <<" enableEdit " << (string)(enable?"true":"false") << endl; 
+	ofLogVerbose("ofxInteractiveRect::enableEdit") << "interactiveRect " << this->nombre <<" enableEdit " << (string)(enable?"true":"false");
     
     if (enable != bIsEditing)
     {
@@ -71,7 +71,7 @@ ofRectangle ofxInteractiveRect::getRect()
 }
 
 //--------------------------------------------------------------
-void ofxInteractiveRect::saveSettings(string nombre, string path)
+void ofxInteractiveRect::saveSettings(string nombre, string path, bool saveJson)
 {
     
     if(nombre!="")
@@ -83,30 +83,101 @@ void ofxInteractiveRect::saveSettings(string nombre, string path)
     {
         this->path = path;
     }
+
+	string filename = this->path + "settings" + this->nombre ;
+	 
+	if(saveJson){
+		filename += ".json";
+		ofSaveJson(filename, toJson());
+	}else{
+		filename += ".xml";
+		toXml().save(filename);
+	}
+	
+	
     
-    ofxXmlSettings settings;
-  //  settings.clear();
-    settings.addTag("interactiveRect");
-    settings.pushTag("interactiveRect", settings.getNumTags("interactiveRect")-1);
-//    settings.setValue("tipo", t);
-    settings.setValue("path", this->path);
-    settings.setValue("x",this->ofRectangle::x);
-    settings.setValue("y",this->ofRectangle::y);
-    settings.setValue("width", this->ofRectangle::width);
-    settings.setValue("height", this->ofRectangle::height);
-    settings.setValue("nombre", this->nombre);
-    settings.popTag();
-    settings.saveFile(this->path + "settings" + this->nombre + ".xml"); 
-    settings.clear();
-    cout << "saved settings XML: "<< this->path << "settings"<< this->nombre << ".xml" << endl;
+	ofLogVerbose("ofxInteractiveRect::saveSettings") << "saved settings: "<< filename;
     
 }
-//--------------------------------------------------------------
-bool ofxInteractiveRect::loadSettings(string nombre, string path)
+
+
+ofJson ofxInteractiveRect::toJson()
 {
-    
-    ofxXmlSettings settings;
-    if (nombre != "" )
+	ofJson j;//("interactiveRect");
+	
+
+	j["x"] = this->ofRectangle::x;
+	j["y"] = this->ofRectangle::y;
+	j["width"] =  this->ofRectangle::width;
+	j["height"] =  this->ofRectangle::height;
+	j["nombre"] =  this->nombre;
+	j["path"] =  this->path;
+	j["isEditing"] = this->bIsEditing;
+	return j;
+}
+
+void ofxInteractiveRect::fromJson(const ofJson& j)
+{
+	
+
+	j["x"].get_to(this->ofRectangle::x);
+	j["y"].get_to(this->ofRectangle::y);
+	j["width"].get_to(this->ofRectangle::width);
+	j["height"].get_to(this->ofRectangle::height);
+	j["nombre"].get_to(this->nombre);
+	j["path"].get_to(this->path);
+	bool editing;
+	
+	j["isEditing"].get_to(editing);
+	enableEdit(editing);
+	
+}
+
+ofXml ofxInteractiveRect::toXml()
+{
+	ofXml xml;
+	auto r = xml.appendChild("interactiveRect");
+	
+	r.appendChild("path").set(this->path);
+	r.appendChild("x").set(this->ofRectangle::x);
+	r.appendChild("y").set(this->ofRectangle::y);
+	r.appendChild("width").set(this->ofRectangle::width);
+	r.appendChild("height").set(this->ofRectangle::height);
+	r.appendChild("nombre").set(this->nombre);
+	r.appendChild("isEditing").set(this->bIsEditing);
+
+	return xml;
+}
+
+bool ofxInteractiveRect::fromXml(const ofXml& xml)
+{
+	
+	auto r = xml.getChild("interactiveRect");
+	if(r)
+	{
+		this->path = r.getChild("path").getValue();
+		this->ofRectangle::x = r.getChild("x").getFloatValue();
+		this->ofRectangle::y = r.getChild("y").getFloatValue();
+		this->ofRectangle::width = r.getChild("width").getFloatValue();
+		this->ofRectangle::height = r.getChild("height").getFloatValue();
+		this->nombre = r.getChild("nombre").getValue();
+		enableEdit(r.getChild("isEditing").getBoolValue());
+		
+		return true;
+	}
+	
+	
+	return false;
+}
+
+
+
+
+
+//--------------------------------------------------------------
+bool ofxInteractiveRect::loadSettings(string nombre, string path, bool loadJson)
+{
+    if(nombre!="")
     {
         this->nombre = nombre;
     }
@@ -115,38 +186,31 @@ bool ofxInteractiveRect::loadSettings(string nombre, string path)
     {
         this->path = path;
     }
+
+	string filename = this->path + "settings" + this->nombre ;
+	 
+	if(loadJson)
+	{
+		filename += ".json";
+		
+		fromJson(ofLoadJson(filename));
+		return true;
+		
+	}else{
+		filename += ".xml";
+		ofXml xml;
+		if(xml.load(filename))
+		{
+			if(fromXml(xml))
+			{
+				return true;
+			}
+		}
+	}
+	ofLogVerbose("ofxInteractiveRect::loadSettings") << "unable to load : "<< filename;
 	
-    if( settings.loadFile(this->path + "settings" + this->nombre + ".xml") )
-    {
+	return false;
         
-		cout << this->path << "settings" << this->nombre << ".xml loaded!" << endl;
-        
-        int tags = settings.getNumTags("interactiveRect");
-        if (tags>0)
-        {
-            settings.pushTag("interactiveRect", tags-1);
-            this->ofRectangle::x = settings.getValue("x", 0);
-            this->ofRectangle::y = settings.getValue("y", 0);
-            this->ofRectangle::width = settings.getValue("width", 0);
-            this->ofRectangle:: height = settings.getValue("height", 0); 
-            this->nombre = settings.getValue("nombre", this->nombre);
-            settings.popTag();
-            settings.clear();
-            return true;   
-        }
-        else
-        {
-            cout    << "invalid xml file!!!"<<endl;
-            return false;
-        }
-        
-    }
-    else
-    {
-        cout << "unable to load " << this->path << "settings" << this->nombre << ".xml check data/ folder" << endl;
-        return false;
-    }
-    
 }
     
 
@@ -169,7 +233,7 @@ void ofxInteractiveRect::draw()
 				ofSetColor(50, 70);				
 			}
 			ofNoFill();
-			ofRect(*this);
+			ofDrawRectangle(*this);
 			
 		}
         
@@ -177,28 +241,28 @@ void ofxInteractiveRect::draw()
         if (bMove)
         {
             ofSetColor(127, 127);
-            ofRect(*this);
+            ofDrawRectangle(*this);
         }
         else
         {
-            ofSetColor(255, 255, 0, 150);
+            ofSetColor(handleColor, 150);
             
             if (bUp)
             {
-                ofRect(x, y, width, MARGEN);
+                ofDrawRectangle(x, y, width, MARGEN);
             }
             else if(bDown)
             {
-                ofRect(x, y + height - MARGEN, width, MARGEN);
+                ofDrawRectangle(x, y + height - MARGEN, width, MARGEN);
             }
             
             if (bLeft)
             {
-                ofRect(x, y, MARGEN, height);
+                ofDrawRectangle(x, y, MARGEN, height);
             }
             else if(bRight)
             {
-                ofRect(x + width - MARGEN, y, MARGEN, height);
+                ofDrawRectangle(x + width - MARGEN, y, MARGEN, height);
             }
         }
         ofPopStyle();
@@ -259,7 +323,7 @@ void ofxInteractiveRect::mouseMoved(ofMouseEventArgs & mouse)
 void ofxInteractiveRect::mousePressed(ofMouseEventArgs & mouse)
 {
     
-    mousePrev.set(mouse.x, mouse.y);
+	mousePrev = mouse;
 	bPressed = true;
     bIsOver = inside(mouse.x, mouse.y);
     
@@ -326,7 +390,7 @@ void ofxInteractiveRect::mouseDragged(ofMouseEventArgs & mouse)
         y += mouse.y - mousePrev.y;
     }
     
-    mousePrev.set(mouse.x, mouse.y);
+	mousePrev = mouse;
     
 }
 //--------------------------------------------------------------

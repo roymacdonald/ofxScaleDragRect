@@ -13,7 +13,6 @@ class ofApp : public ofBaseApp
 		void setup();
 		void update();
 		void draw();
-        void exit();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -25,7 +24,9 @@ class ofApp : public ofBaseApp
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-        ofxInteractiveImage *image;
-        ofxInteractiveVideo *video;
+	
+		// the string with which you initialize these is the name of each, and it will be saved with such name when you dont provide one in the saveSettings function
+		ofxInteractiveImage image = {"Image"};
+		ofxInteractiveVideo video = {"Video"};
 		
 };

@@ -30,36 +30,36 @@ public:
     void setup(string path)
     {
         
-        this->path = path;
-        if(this->loadMovie(path))
-        {
-            
-            this->ofxInteractiveRect::set(x,y,this->ofVideoPlayer::getWidth(),this->ofVideoPlayer::getHeight());
-            cout << "loaded " << path << endl;
-            ofAddListener(ofEvents().update, this, &ofxInteractiveVideo::updateVideo);
-        }
-        else
-        {
-            cout << "couldn load " << path << endl;
-        }
+		load(path);
         
     }
     
     void setup(string path, float x, float y, float w, float h)
     {
-        
-        this->path = path;
-        if(this->loadMovie(path))
+        if(load(path))
         {
             this->ofxInteractiveRect::set(x,y,w,h);
-            cout << "loaded " << path << " " << x << " " << y << " " << w << " " << h << endl;
+        }
+    }
+	
+	bool load(string path)
+    {
+        this->path = path;
+        if(ofVideoPlayer::load(path))
+        {
+            this->ofxInteractiveRect::set(x,y,this->ofVideoPlayer::getWidth(),this->ofVideoPlayer::getHeight());
+			ofLogVerbose("ofxInteractiveVideo::load") << "loaded \"" << path << "\" successfully!";
+			ofAddListener(ofEvents().update, this, &ofxInteractiveVideo::updateVideo);
+			return true;
         }
         else
         {
-            cout << "couldn load " << path << endl;
+			ofLogVerbose("ofxInteractiveVideo::load") << " failed to load \"" << path ;
+            
         }
-        
+		return false;
     }
+	
     
     void updateVideo(ofEventArgs &e)
     {
@@ -91,27 +91,6 @@ public:
         this->ofVideoPlayer::draw(x, this->y, this->ofxInteractiveRect::width, this->ofxInteractiveRect::height );
     }
     
-//    bool isOver(float x, float y)
-//    {
-//        
-//        if (this->inside(x, y))
-//        {
-//            cout << this->ofVideoPlayer::getColor(x, y) << endl;
-//            if(this->ofVideoPlayer::getColor(x, y).a > 0 )
-//            {
-//                return true;
-//            }
-//            else
-//            {
-//                return false;
-//            }
-//        }
-//        else
-//        {
-//            return false;
-//        }
-//        
-//    }
     
 };
 

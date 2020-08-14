@@ -1,2 +1,1 @@
 ofxScaleDragRect
-ofxXmlSettings

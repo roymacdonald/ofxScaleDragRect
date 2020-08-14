@@ -27,50 +27,33 @@ public:
     
     void setup(string path)
     {
-        
-        this->path = path;
-        if(this->loadImage(path))
-        {
-            
-            this->ofxInteractiveRect::set(x,y,this->ofImage::getWidth(),this->ofImage::getHeight());
-            cout << "loaded " << path << endl;
-        }
-        else
-        {
-            cout << "couldn load " << path << endl;
-        }
+		load(path);
         
     }
-    void setup(string path, float x, float y, float w, float h)
+    void setup(string path, float x , float y, float w, float h)
     {
         
-        this->path = path;
-        if(this->loadImage(path))
-        {
-            this->ofxInteractiveRect::set(x,y,w,h);
-            cout << "loaded " << path << " " << x << " " << y << " " << w << " " << h << endl;
-        }
-        else
-        {
-            cout << "couldn load " << path << endl;
-        }
-        
+		load(path);
+		
+		this->ofxInteractiveRect::set(x,y,w,h);
+		
     }
     
-    void load(string path)
+    bool load(string path)
     {
-        
         this->path = path;
-        if(this->loadImage(path))
+        if(ofImage::load(path))
         {
-            this->ofRectangle::set(0, 0, this->ofImage::getWidth(), this->ofImage::getHeight());
-            cout << "loaded " << path << endl;
+            this->ofxInteractiveRect::set(x,y,this->ofImage::getWidth(),this->ofImage::getHeight());
+			ofLogVerbose("ofxInteractiveImage: setup") << "loaded \"" << path << "\" successfully!";
+			return true;
         }
         else
         {
-            cout << "couldn load " << path << endl;
+			ofLogVerbose("ofxInteractiveImage: setup") << " failed to load \"" << path ;
+            
         }
-        
+		return false;
     }
     
     void draw()

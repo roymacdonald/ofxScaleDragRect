@@ -10,7 +10,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxXmlSettings.h"
+
 
 
 #define MARGEN 10
@@ -25,11 +25,13 @@ public:
     void enableEdit(bool enable = true);
     void disableEdit();
     void toggleEdit();
-    
+	bool isEditing(){return bIsEditing;}
+	
+	
     void draw();
     
-    bool loadSettings(string nombre = "", string path = "");
-    void saveSettings(string nombre = "", string path = "");
+    bool loadSettings(string nombre = "", string path = "", bool loadJson = false);
+    void saveSettings(string nombre = "", string path = "", bool saveJson = false);
     
     
     void mouseMoved(ofMouseEventArgs & mouse);
@@ -57,14 +59,23 @@ public:
         this->height = height;
     }
     
+	
+	ofJson toJson();
+	void fromJson(const ofJson& j);
+	
+	ofXml toXml();
+	bool fromXml(const ofXml& x);
+	
+	ofColor handleColor = {ofColor::yellow};
+	
 protected:
     bool bIsEditing;
     bool bMove;
 	bool bIsOver;
     bool bLeft, bRight, bUp, bDown;
 	bool bPressed;
-    ofVec2f mousePrev;
-   // ofxXmlSettings settings;
+    glm::vec2 mousePrev;
+   
    
     
 };
