@@ -20,7 +20,7 @@ class ofxInteractiveRect : public ofRectangle
     
 public:
     ofxInteractiveRect(string nombre);
-    ~ofxInteractiveRect();
+    virtual ~ofxInteractiveRect();
         
     void enableEdit(bool enable = true);
     void disableEdit();
